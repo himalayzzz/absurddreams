@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Absurd Dream Slideshow</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    :root {
+      --primary-purple: #8B7CF6;
+      --secondary-purple: #A78BFA;
+      --lilac: #C4B5FD;
+      --card-bg: rgba(255, 255, 255, 0.1);
+      --text-light: #F3F4F6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: var(--text-light);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Floating celestial elements */
+    .celestial-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .moon, .star {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .moon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #FEF3C7, #F59E0B);
+      box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+    }
+
+    .star {
+      width: 8px;
+      height: 8px;
+      background: white;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .moon:nth-child(1) { top: 10%; right: 15%; animation-delay: -2s; }
+    .moon:nth-child(2) { top: 70%; left: 10%; animation-delay: -4s; }
+    .star:nth-child(3) { top: 20%; left: 20%; animation-delay: -1s; }
+    .star:nth-child(4) { top: 30%; right: 30%; animation-delay: -3s; }
+    .star:nth-child(5) { top: 60%; right: 20%; animation-delay: -5s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 30px 20px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+  margin: 0 0 10px 0;
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 900;
+  color: #ffffff;
+  text-shadow: 0 0 10px #f8f000, 0 0 30px #fad400, 0 0 60px #ffea00;
+  letter-spacing: 2px;
+    }
+
+    .input-section {
+      margin-bottom: 30px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      padding: 30px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 20px;
+      border-radius: 15px;
+      border: 2px solid rgba(139, 124, 246, 0.3);
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+      font-size: 16px;
+      font-family: 'Poppins', sans-serif;
+      resize: vertical;
+      margin-bottom: 20px;
+    }
+
+    textarea::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    button {
+      padding: 15px 30px;
+      border-radius: 15px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
+      color: white;
+      box-shadow: 0 8px 25px rgba(139, 124, 246, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(139, 124, 246, 0.6);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Swiper */
+    .slideshow-container {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .swiper {
+      width: 100%;
+      height: 500px;
+      border-radius: 15px;
+    }
+
+    .swiper-slide {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(30, 27, 75, 0.8), rgba(91, 33, 182, 0.8));
+    }
+
+    .slide-img {
+      max-width: 90%;
+      max-height: 350px;
+      border-radius: 15px;
+      object-fit: cover;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .caption {
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 15px 25px;
+      border-radius: 25px;
+      font-size: 16px;
+      text-align: center;
+      max-width: 90%;
+      line-height: 1.5;
+    }
+
+    .loading {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .loading::after {
+      content: '';
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes screenShake {
+      0%, 100% { transform: translate(0); }
+      10% { transform: translate(-2px, -1px) rotate(0.5deg); }
+      20% { transform: translate(1px, -3px) rotate(-0.5deg); }
+      30% { transform: translate(-3px, 0px) rotate(0.5deg); }
+      40% { transform: translate(0px, -1px) rotate(-0.5deg); }
+      50% { transform: translate(-1px, 1px) rotate(0.5deg); }
+      60% { transform: translate(-3px, 1px) rotate(-0.5deg); }
+      70% { transform: translate(2px, 1px) rotate(0.5deg); }
+      80% { transform: translate(-1px, -1px) rotate(-0.5deg); }
+      90% { transform: translate(2px, 2px) rotate(0.5deg); }
+    }
+
+    @keyframes vhsGlitch {
+      0% { transform: translateX(0); filter: hue-rotate(0deg); }
+      10% { transform: translateX(-2px); filter: hue-rotate(90deg); }
+      20% { transform: translateX(2px); filter: hue-rotate(180deg); }
+      30% { transform: translateX(-1px); filter: hue-rotate(270deg); }
+      40% { transform: translateX(1px); filter: hue-rotate(360deg); }
+      50% { transform: translateX(-2px); filter: hue-rotate(90deg); }
+      60% { transform: translateX(2px); filter: hue-rotate(180deg); }
+      70% { transform: translateX(-1px); filter: hue-rotate(270deg); }
+      80% { transform: translateX(1px); filter: hue-rotate(360deg); }
+      90% { transform: translateX(-2px); filter: hue-rotate(90deg); }
+      100% { transform: translateX(0); filter: hue-rotate(0deg); }
+    }
+
+    @keyframes flashWhite {
+      0% { background-color: transparent; }
+      50% { background-color: rgba(255, 255, 255, 0.9); }
+      100% { background-color: transparent; }
+    }
+
+    @keyframes tvStatic {
+      0% { opacity: 0; }
+      50% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .memory-wipe-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .countdown-text {
+      font-size: 32px;
+      font-weight: 700;
+      color: #FF6B6B;
+      text-shadow: 0 0 20px #FF6B6B;
+      animation: flashWhite 0.5s infinite;
+      margin-bottom: 20px;
+    }
+
+    .tv-static {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 255, 255, 0.03) 2px,
+          rgba(255, 255, 255, 0.03) 4px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.03) 2px,
+          rgba(0, 0, 0, 0.03) 4px
+        );
+      animation: tvStatic 0.1s infinite;
+      opacity: 0;
+    }
+
+    .shake-screen {
+      animation: screenShake 0.5s infinite;
+    }
+
+    .vhs-glitch {
+      animation: vhsGlitch 0.3s infinite;
+    }
+
+    .white-flash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .flash-active {
+      animation: flashWhite 0.1s 3;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      opacity: 0.7;
+    }
+
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    /* Timer display */
+    .dream-timer {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      color: #FF6B6B;
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      display: none;
+      text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .swiper {
+        height: 400px;
+      }
+
+      .dream-timer {
+        top: 10px;
+        right: 10px;
+        font-size: 12px;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating celestial elements -->
+  <div class="celestial-bg">
+    <div class="moon"></div>
+    <div class="moon"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+  </div>
+
+  <!-- Dream Timer -->
+  <div class="dream-timer" id="dreamTimer">
+    ⏰ Dream expires in: 2:00
+  </div>
+
+  <div class="container">
+    <header>
+      <h1>✨ Nadakkatha Swapnam Pvt. Ltd. ✨</h1>
+      <p>Turning your everyday stories into certified useless dreams.</p>
+    </header>
+
+    <div class="input-section">
+      <textarea id="day" placeholder="Describe your day... (e.g., I had coffee with friends, went to work, got stuck in traffic...)"></textarea>
+      <button onclick="absurdify()">🌙 Absurdify My Day</button>
+    </div>
+
+    <div class="slideshow-container">
+      <div class="swiper" id="dreamSlideshow">
+        <div class="swiper-wrapper" id="output">
+          <div class="swiper-slide">
+            <div class="empty-state">
+              <div class="empty-state-icon">🌟</div>
+              <h3>Your dreams await...</h3>
+              <p>Describe your day above and watch the magic unfold</p>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Memory Wipe Overlay -->
+  <div class="memory-wipe-overlay" id="memoryWipeOverlay">
+    <div class="countdown-text" id="countdownText">This dream will self-destruct from your memory in 3...</div>
+    <div class="tv-static" id="tvStatic"></div>
+  </div>
+
+  <!-- White Flash Overlay -->
+  <div class="white-flash" id="whiteFlash"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    var HUGGINGFACE_KEY = ""; // <-- Replace with your actual API key
+    fetch("/config.json")
+      .then(response => response.json())
+      .then(data => {
+        HUGGINGFACE_KEY = data.API_KEY;
+      });
+
+    let swiper = null;
+    let memoryWipeTimer = null;
+    let dreamTimerInterval = null;
+
+    function initSwiper() {
+      if (swiper) {
+        swiper.destroy(true, true);
+      }
+      
+      swiper = new Swiper('#dreamSlideshow', {
+        loop: true,
+        autoplay: {
+          delay: 4000,
+          disableOnInteraction: false,
+        },
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+        effect: 'fade',
+        fadeEffect: {
+          crossFade: true,
+        },
+        speed: 800,
+      });
+    }
+
+    function startDreamTimer() {
+      const timerDisplay = document.getElementById('dreamTimer');
+      let timeLeft = 40; // 40 seconds
+      
+      timerDisplay.style.display = 'block';
+      
+      dreamTimerInterval = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `⏰ Dream expires in: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Change color as time runs out
+        if (timeLeft <= 30) {
+          timerDisplay.style.color = '#FF4444';
+          timerDisplay.style.borderColor = 'rgba(255, 68, 68, 0.5)';
+          timerDisplay.style.background = 'rgba(255, 68, 68, 0.15)';
+        } else if (timeLeft <= 60) {
+          timerDisplay.style.color = '#FF8844';
+          timerDisplay.style.borderColor = 'rgba(255, 136, 68, 0.4)';
+          timerDisplay.style.background = 'rgba(255, 136, 68, 0.1)';
+        }
+        
+        timeLeft--;
+        
+        if (timeLeft < 0) {
+          clearInterval(dreamTimerInterval);
+          timerDisplay.style.display = 'none';
+        }
+      }, 1000);
+    }
+
+    function startMemoryWipeSequence() {
+      // Clear any existing timer
+      if (memoryWipeTimer) {
+        clearTimeout(memoryWipeTimer);
+      }
+      
+      // Clear dream timer
+      if (dreamTimerInterval) {
+        clearInterval(dreamTimerInterval);
+        document.getElementById('dreamTimer').style.display = 'none';
+      }
+      
+      // Start 2-minute timer for memory wipe
+      memoryWipeTimer = setTimeout(() => {
+        startMemoryWipe();
+      }, 120000); // 2 minutes = 120,000 milliseconds
+      
+      // Start the visual countdown timer
+      startDreamTimer();
+    }
+
+    // Memory Wipe System
+    function startMemoryWipe() {
+      const overlay = document.getElementById('memoryWipeOverlay');
+      const countdownText = document.getElementById('countdownText');
+      const container = document.querySelector('.container');
+      
+      // Show overlay
+      overlay.style.display = 'flex';
+      
+      // Countdown sequence
+      let count = 3;
+      countdownText.textContent = `This dream will self-destruct from your memory in ${count}...`;
+      
+      const countdownInterval = setInterval(() => {
+        count--;
+        if (count > 0) {
+          countdownText.textContent = `This dream will self-destruct from your memory in ${count}...`;
+        } else {
+          countdownText.textContent = `MEMORY WIPE INITIATED!`;
+          clearInterval(countdownInterval);
+          
+          // Start the destruction sequence
+          setTimeout(() => {
+            executeMemoryWipe(container, overlay);
+          }, 500);
+        }
+      }, 1000);
+    }
+
+    function executeMemoryWipe(container, overlay) {
+      // Phase 1: Screen shake
+      container.classList.add('shake-screen');
+      
+      setTimeout(() => {
+        // Phase 2: VHS glitch
+        container.classList.add('vhs-glitch');
+        document.getElementById('tvStatic').style.opacity = '0.3';
+        
+        setTimeout(() => {
+          // Phase 3: White flashes
+          const whiteFlash = document.getElementById('whiteFlash');
+          whiteFlash.classList.add('flash-active');
+          
+          setTimeout(() => {
+            // Phase 4: Complete wipe
+            wipeUI(container, overlay, whiteFlash);
+          }, 300);
+        }, 800);
+      }, 1000);
+    }
+
+    function wipeUI(container, overlay, whiteFlash) {
+      // Final white flash
+      whiteFlash.style.opacity = '1';
+      
+      setTimeout(() => {
+        // Reset everything
+        container.classList.remove('shake-screen', 'vhs-glitch');
+        overlay.style.display = 'none';
+        whiteFlash.style.opacity = '0';
+        whiteFlash.classList.remove('flash-active');
+        document.getElementById('tvStatic').style.opacity = '0';
+        
+        // Reset the slideshow to empty state
+        document.getElementById('output').innerHTML = `
+          <div class="swiper-slide">
+            <div class="empty-state">
+              <div class="empty-state-icon">🌟</div>
+              <h3>Your dreams await...</h3>
+              <p>Describe your day above and watch the magic unfold</p>
+            </div>
+          </div>
+        `;
+        
+        // Clear the input
+        document.getElementById('day').value = '';
+        
+        // Reinitialize swiper
+        initSwiper();
+        
+        // Clear any timers
+        if (memoryWipeTimer) {
+          clearTimeout(memoryWipeTimer);
+          memoryWipeTimer = null;
+        }
+        if (dreamTimerInterval) {
+          clearInterval(dreamTimerInterval);
+          dreamTimerInterval = null;
+        }
+        
+        // Show a subtle message
+        setTimeout(() => {
+          const message = document.createElement('div');
+          message.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            color: #FF6B6B;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+          `;
+          message.textContent = '✨ Dream memory wiped successfully';
+          document.body.appendChild(message);
+          
+          // Fade in
+          setTimeout(() => message.style.opacity = '1', 100);
+          
+          // Remove after 3 seconds
+          setTimeout(() => {
+            message.style.opacity = '0';
+            setTimeout(() => message.remove(), 500);
+          }, 3000);
+        }, 500);
+        
+      }, 200);
+    }
+
+    // Absurd realistic scenario templates
+    const ABSURD_SCENARIOS = {
+      workplace: [
+        "but your boss is actually three penguins in a business suit",
+        "except the office building is made entirely of cheese",
+        "while riding a unicycle through hallways filled with floating staplers"
+      ],
+      
+      coffee: [
+        "but the coffee beans are tiny singing birds",
+        "except the cafe is run by philosophical cats wearing bow ties",
+        "while sitting on clouds instead of chairs"
+      ],
+      
+      traffic: [
+        "but all cars are replaced by giant rolling dice",
+        "except the road is made of rainbow-colored jelly",
+        "while traffic lights are operated by dancing squirrels"
+      ],
+      
+      shopping: [
+        "but the shopping cart has a mind of its own and gives life advice",
+        "except all products are replaced by miniature circus performers",
+        "while the store aisles are actually floating in space"
+      ],
+      
+      cooking: [
+        "but the ingredients start telling jokes while you chop them",
+        "except the kitchen utensils have formed a jazz band",
+        "while cooking on a stove that's actually a friendly dragon"
+      ],
+      
+      exercise: [
+        "but the gym equipment is made of marshmallows",
+        "except you're working out underwater with fish as personal trainers",
+        "while wearing a cape that makes you bounce like a kangaroo"
+      ],
+      
+      meeting: [
+        "but everyone communicates only through interpretive dance",
+        "except the conference room is inside a giant snow globe",
+        "while sitting on throne chairs made of office supplies"
+      ],
+      
+      commute: [
+        "but your transport is a giant flying taco",
+        "except the route goes through a tunnel made of books",
+        "while being serenaded by a choir of traffic cones"
+      ],
+
+      default: [
+        "but gravity works sideways and everyone walks on walls",
+        "except everything is made of jelly and wobbles when touched",
+        "while being followed by a parade of tiny elephants playing trumpets"
+      ]
+    };
+
+    // Dream rating system
+    function calculateDreamRating(userInput, scenarios) {
+      const inputWords = userInput.toLowerCase().split(/\s+/);
+      
+      // Keywords that make dreams more absurd
+      const absurdKeywords = ['work', 'office', 'boss', 'meeting', 'traffic', 'coffee', 'shopping', 'exercise', 'cooking', 'commute', 'study', 'exam', 'presentation', 'deadline', 'stress'];
+      const creativityKeywords = ['creative', 'art', 'music', 'dance', 'paint', 'write', 'imagine', 'dream'];
+      const boringKeywords = ['boring', 'tired', 'routine', 'same', 'usual', 'normal', 'regular'];
+      
+      let score = 50; // Base score
+      
+      // Add points for mundane activities (more absurd potential)
+      absurdKeywords.forEach(keyword => {
+        if (inputWords.some(word => word.includes(keyword))) {
+          score += 15;
+        }
+      });
+      
+      // Add points for creative activities
+      creativityKeywords.forEach(keyword => {
+        if (inputWords.some(word => word.includes(keyword))) {
+          score += 10;
+        }
+      });
+      
+      // Add points for boring activities (high absurd potential)
+      boringKeywords.forEach(keyword => {
+        if (inputWords.some(word => word.includes(keyword))) {
+          score += 20;
+        }
+      });
+      
+      // Length bonus (more details = more absurd potential)
+      if (userInput.length > 100) score += 10;
+      if (userInput.length > 200) score += 10;
+      
+      // Random factor for uniqueness
+      score += Math.floor(Math.random() * 15);
+      
+      // Cap the score
+      score = Math.min(100, Math.max(10, score));
+      
+      const ratings = [
+        { min: 90, label: "🌟 LEGENDARY ABSURDITY - Pure Dream Magic!", color: "#FFD700" },
+        { min: 80, label: "🎭 WONDERFULLY WEIRD - Epic Dream Material!", color: "#FF6B6B" },
+        { min: 70, label: "✨ CHARMINGLY ABSURD - Sweet Dream Vibes!", color: "#4ECDC4" },
+        { min: 60, label: "🌙 MILDLY MAGICAL - Gentle Fantasy!", color: "#45B7D1" },
+        { min: 40, label: "😴 COZY WEIRDNESS - Peaceful Absurdity!", color: "#96CEB4" },
+        { min: 0, label: "🌸 SUBTLE STRANGENESS - Soft Dream Whispers!", color: "#FFEAA7" }
+      ];
+      
+      const rating = ratings.find(r => score >= r.min);
+      return { score, label: rating.label, color: rating.color };
+    }
+
+    function getAbsurdScenarios(userInput) {
+      const inputLower = userInput.toLowerCase();
+      let scenarios = ABSURD_SCENARIOS.default;
+      
+      // Detect activity type and use appropriate scenarios
+      for (let [activity, absurdList] of Object.entries(ABSURD_SCENARIOS)) {
+        if (activity !== 'default' && inputLower.includes(activity)) {
+          scenarios = absurdList;
+          break;
+        }
+      }
+      
+      // Create 3 absurd scenes
+      const shuffled = [...scenarios].sort(() => 0.5 - Math.random());
+      return [
+        `Imagine ${userInput} ${shuffled[0]}`,
+        `Picture this: ${userInput} ${shuffled[1]}`, 
+        `Dream finale: ${userInput} ${shuffled[2]}`
+      ];
+    }
+
+    async function absurdify() {
+      const day = document.getElementById('day').value;
+      
+      if (!day) {
+        return alert("Enter your day first! ✨");
+      }
+      
+      if (!HUGGINGFACE_KEY || HUGGINGFACE_KEY === "") {
+        return alert("Please add your Hugging Face API key first!");
+      }
+
+      // Clear any existing timers
+      if (memoryWipeTimer) {
+        clearTimeout(memoryWipeTimer);
+      }
+      if (dreamTimerInterval) {
+        clearInterval(dreamTimerInterval);
+      }
+
+      // Get contextual absurd scenarios
+      const absurdScenes = getAbsurdScenarios(day);
+      
+      // Calculate dream rating
+      const dreamRating = calculateDreamRating(day, absurdScenes);
+
+      const button = document.querySelector('button');
+      const originalText = button.innerHTML;
+      button.innerHTML = '<span class="loading">Creating your dream</span>';
+      button.disabled = true;
+
+      document.getElementById('output').innerHTML = '<div class="swiper-slide"><div style="text-align: center; padding: 60px;"><p style="font-size: 18px;">Loading your absurd dream... ✨</p></div></div>';
+
+      let slides = "";
+      
+      for (let i = 0; i < absurdScenes.length; i++) {
+        const scene = absurdScenes[i];
+        try {
+          const imgUrl = await getImage(scene + ", surreal digital art, vibrant colors, dreamlike atmosphere");
+          slides += `
+            <div class="swiper-slide">
+              <img class="slide-img" src="${imgUrl}" alt="${scene}" />
+              <div class="caption">${scene}</div>
+            </div>
+          `;
+        } catch (error) {
+          console.error('Image generation failed:', error);
+          slides += `
+            <div class="swiper-slide">
+              <div style="text-align: center; padding: 40px;">
+                <h3 style="margin-bottom: 20px;">${scene}</h3>
+                <p style="opacity: 0.7;">✨ Imagine this scene in your mind's eye ✨</p>
+              </div>
+            </div>
+          `;
+        }
+      }
+      
+      // Add dream rating slide
+      slides += `
+        <div class="swiper-slide">
+          <div style="text-align: center; padding: 40px;">
+            <div style="font-size: 72px; margin-bottom: 20px; color: ${dreamRating.color};">${dreamRating.score}%</div>
+            <h3 style="margin-bottom: 15px; color: ${dreamRating.color};">ABSURDITY RATING</h3>
+            <p style="font-size: 18px; line-height: 1.6;">${dreamRating.label}</p>
+            <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 15px;">
+              <p style="opacity: 0.9; font-size: 14px;">Your daily moment has been transformed into ${dreamRating.score}% pure dream magic! 🌟</p>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('output').innerHTML = slides;
+      initSwiper();
+      
+      // Start the 2-minute memory wipe sequence
+      startMemoryWipeSequence();
+      
+      button.innerHTML = originalText;
+      button.disabled = false;
+    }
+
+    async function getImage(prompt) {
+      // Using the same model as your working version
+      const res = await fetch("https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${HUGGINGFACE_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          inputs: prompt,
+          options: { wait_for_model: true }
+        })
+      });
+
+      if (!res.ok) {
+        const errorData = await res.text();
+        throw new Error(`API Error: ${res.status} - ${errorData}`);
+      }
+
+      const imageBlob = await res.blob();
+      const imageUrl = URL.createObjectURL(imageBlob);
+      return imageUrl;
+    }
+
+    // Initialize empty swiper on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      initSwiper();
+    });
+  </script>
+</body>
+</html>
