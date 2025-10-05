@@ -120,8 +120,8 @@ Description of each step given via screenshots above.
 
 
 ## Team Contributions
-- Hima Baijuraj- HTML, API
-- Gloria Mary Siby- Javascript, CSS
+- Hima Baijuraj- Javascript, API
+- Gloria Mary Siby- HTML, CSS
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
